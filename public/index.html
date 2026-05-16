@@ -27,7 +27,6 @@
       gap: 2.5rem; padding: 2rem;
     }
 
-    /* ── Brand ── */
     .brand { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-align: center; }
     .brand-globe {
       width: 60px; height: 60px; background: var(--red-dim);
@@ -50,7 +49,6 @@
       font-size: 0.65rem; letter-spacing: 0.22em; color: var(--mute); text-transform: uppercase;
     }
 
-    /* ── Form ── */
     #sj-form {
       width: 100%; max-width: 560px;
       display: flex; align-items: center;
@@ -81,7 +79,11 @@
     .go-btn:hover { background: #b8102e; transform: scale(1.06); }
     .go-btn:active { transform: scale(0.96); }
 
-    /* ── Quick links ── */
+    #sj-error {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+      color: #ff6b6b; display: none; text-align: center; max-width: 560px;
+    }
+
     .quick { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
     .ql {
       display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
@@ -98,7 +100,6 @@
     .ql:hover .ql-ico { border-color: var(--bdr-red); box-shadow: 0 0 18px rgba(220,20,60,0.13); }
     .ql-lbl { font-size: 0.68rem; color: var(--mute); font-weight: 500; letter-spacing: 0.02em; }
 
-    /* ── Footer ── */
     .footer {
       position: fixed; bottom: 0; left: 0; right: 0;
       padding: 0.5rem 1.2rem;
@@ -144,7 +145,9 @@
     </button>
   </form>
 
-  <!-- Quick-launch: emoji icons, no external image fetches -->
+  <p id="sj-error"></p>
+  <pre id="sj-error-code" style="display:none;font-size:0.65rem;color:rgba(240,240,245,0.4);max-width:560px;overflow:auto"></pre>
+
   <div class="quick">
     <a class="ql" data-url="https://youtube.com">
       <div class="ql-ico">▶️</div><span class="ql-lbl">YouTube</span>
@@ -179,41 +182,80 @@
 </div>
 
 <!--
-  Scramjet bootstrap — paths match the built output from Scramjet-App.
-  scramjet.all.js is the unified bundle (replaces the old codecs + controller split).
-  Do NOT change these paths; they're served by the Node.js server at build time.
+  FIX 1: /baremux/index.js loaded BEFORE scramjet.all.js (required dependency)
+  FIX 2: plain <script> instead of type="module" so $scramjet global is accessible
+  FIX 3: async init wrapped in try/catch with DOMContentLoaded guard
+  NOTE: proxy.html (your website page) does NOT need these scripts — it uses an
+        iframe pointing here. Only this file (/public/index.html on Railway) needs them.
 -->
+<script src="/baremux/index.js"></script>
 <script src="/scram/scramjet.all.js"></script>
-<script type="module">
-  // ScramjetController is exposed as a global by scramjet.all.js
-  const { ScramjetController } = $scramjet;
+<script src="register-sw.js" defer></script>
+<script>
+  async function initScramjet() {
+    var errEl     = document.getElementById('sj-error');
+    var errCode   = document.getElementById('sj-error-code');
 
-  const controller = new ScramjetController({
-    prefix:  "/scram/proxy/",
-    config:  "/scram/scramjet.config.js",
-    wispUrl: (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/",
-  });
+    function showError(msg, detail) {
+      errEl.textContent = '⚠ ' + msg;
+      errEl.style.display = 'block';
+      if (detail) { errCode.textContent = detail; errCode.style.display = 'block'; }
+    }
 
-  await controller.init("/scram/scramjet.worker.js");
+    try {
+      var ctrl = new $scramjet.ScramjetController({
+        prefix:  '/scram/proxy/',
+        config:  '/scram/scramjet.config.js',
+        wispUrl: (location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host + '/wisp/',
+      });
 
-  function go(raw) {
-    raw = (raw || "").trim();
-    if (!raw) return;
-    let url;
-    if (/^https?:\/\//i.test(raw))           url = raw;
-    else if (/^[\w-]+(\.[\w-]+)+/.test(raw)) url = "https://" + raw;
-    else url = "https://www.google.com/search?q=" + encodeURIComponent(raw);
-    controller.go(new URL(url));
+      await ctrl.init('/scram/scramjet.worker.js');
+
+      function go(raw) {
+        raw = (raw || '').trim();
+        if (!raw) return;
+        var url;
+        if (/^https?:\/\//i.test(raw))           url = raw;
+        else if (/^[\w-]+(\.[\w-]+)+/.test(raw)) url = 'https://' + raw;
+        else url = 'https://www.google.com/search?q=' + encodeURIComponent(raw);
+        ctrl.go(new URL(url));
+      }
+
+      document.getElementById('sj-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        go(document.getElementById('sj-address').value);
+      });
+
+      document.querySelectorAll('.ql[data-url]').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+          e.preventDefault();
+          go(el.dataset.url);
+        });
+      });
+
+      // KEY FIX: If proxy.html passed a URL via the hash fragment, auto-navigate to it.
+      // e.g. iframe src = "https://backend.railway.app/#https%3A%2F%2Fyoutube.com"
+      // This avoids ALL cross-origin DOM manipulation from the parent frame.
+      var hash = location.hash.slice(1); // strip leading #
+      if (hash) {
+        try {
+          var autoUrl = decodeURIComponent(hash);
+          // Small delay so Scramjet controller finishes registering
+          setTimeout(function() { go(autoUrl); }, 300);
+        } catch(e) { /* bad hash, ignore */ }
+      }
+
+    } catch(err) {
+      console.error('Scramjet init failed:', err);
+      showError('Proxy failed to initialize: ' + err.message, err.stack);
+    }
   }
 
-  document.getElementById("sj-form").addEventListener("submit", e => {
-    e.preventDefault();
-    go(document.getElementById("sj-address").value);
-  });
-
-  document.querySelectorAll(".ql[data-url]").forEach(el => {
-    el.addEventListener("click", e => { e.preventDefault(); go(el.dataset.url); });
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScramjet);
+  } else {
+    initScramjet();
+  }
 </script>
 
 </body>
