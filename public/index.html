@@ -8,208 +8,121 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --red:      #dc143c;
-      --red-dim:  rgba(220,20,60,0.15);
-      --red-glow: rgba(220,20,60,0.35);
-      --bg:       #0d0d14;
-      --surface:  #16161f;
-      --surface2: #1c1c28;
-      --border:   rgba(255,255,255,0.07);
-      --bdr-red:  rgba(220,20,60,0.22);
-      --text:     #f0f0f5;
-      --dim:      rgba(240,240,245,0.55);
-      --mute:     rgba(240,240,245,0.3);
-      --display:  'Bebas Neue', sans-serif;
-      --body:     'DM Sans', sans-serif;
-      --mono:     'JetBrains Mono', monospace;
+      --red: #dc143c; --red-dim: rgba(220,20,60,0.13); --red-glow: rgba(220,20,60,0.3);
+      --bg: #0d0d14; --surface: #16161f; --surface2: #1c1c28;
+      --border: rgba(255,255,255,0.07); --bdr-red: rgba(220,20,60,0.22);
+      --text: #f0f0f5; --dim: rgba(240,240,245,0.55); --mute: rgba(240,240,245,0.28);
     }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; }
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--body);
-      overflow: hidden;
-    }
-
-    /* ── Background grain + glow ── */
     body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 800px 400px at 50% 40%, rgba(220,20,60,0.055) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 200px at 50% 80%, rgba(220,20,60,0.03) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      background-size: 180px;
-      pointer-events: none; opacity: 0.5;
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(ellipse 700px 350px at 50% 42%, rgba(220,20,60,0.06) 0%, transparent 70%);
     }
 
-    /* ── Layout ── */
     .page {
-      position: relative; z-index: 1;
-      height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 3rem; padding: 2rem;
+      position: relative; z-index: 1; height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.5rem; padding: 2rem;
     }
 
-    /* ── Logo / wordmark ── */
-    .brand {
-      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-      text-align: center;
-    }
+    /* ── Brand ── */
+    .brand { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-align: center; }
     .brand-globe {
-      width: 64px; height: 64px;
-      background: var(--red-dim);
-      border: 1px solid var(--bdr-red);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--red);
-      animation: globe-pulse 3s ease-in-out infinite;
-      box-shadow: 0 0 0 0 var(--red-glow);
-      margin-bottom: 0.5rem;
+      width: 60px; height: 60px; background: var(--red-dim);
+      border: 1px solid var(--bdr-red); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: var(--red);
+      animation: pulse 3s ease-in-out infinite; margin-bottom: 0.3rem;
     }
-    @keyframes globe-pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(220,20,60,0.25); }
-      50%      { box-shadow: 0 0 0 16px rgba(220,20,60,0); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(220,20,60,0.2); }
+      50%      { box-shadow: 0 0 0 14px rgba(220,20,60,0); }
     }
     .brand-name {
-      font-family: var(--display);
-      font-size: clamp(2.2rem, 6vw, 3.5rem);
-      letter-spacing: 4px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 5.5vw, 3.2rem); letter-spacing: 4px;
       background: linear-gradient(135deg, #8b0000 0%, #dc143c 45%, #ff6b6b 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      line-height: 1;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;
     }
     .brand-sub {
-      font-family: var(--mono);
-      font-size: 0.68rem; letter-spacing: 0.25em;
-      color: var(--mute); text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.22em; color: var(--mute); text-transform: uppercase;
     }
 
-    /* ── Search form ── */
+    /* ── Form ── */
     #sj-form {
-      width: 100%; max-width: 580px;
+      width: 100%; max-width: 560px;
       display: flex; align-items: center;
-      background: var(--surface);
-      border: 1px solid var(--bdr-red);
-      border-radius: 14px;
-      padding: 0.6rem 0.6rem 0.6rem 1.1rem;
-      gap: 0.6rem;
-      box-shadow: 0 0 60px rgba(220,20,60,0.07), 0 4px 24px rgba(0,0,0,0.4);
+      background: var(--surface); border: 1px solid var(--bdr-red); border-radius: 13px;
+      padding: 0.55rem 0.55rem 0.55rem 1rem; gap: 0.5rem;
+      box-shadow: 0 0 50px rgba(220,20,60,0.06), 0 4px 20px rgba(0,0,0,0.4);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     #sj-form:focus-within {
-      border-color: rgba(220,20,60,0.5);
-      box-shadow: 0 0 0 3px rgba(220,20,60,0.09), 0 0 60px rgba(220,20,60,0.12);
+      border-color: rgba(220,20,60,0.48);
+      box-shadow: 0 0 0 3px rgba(220,20,60,0.08), 0 0 50px rgba(220,20,60,0.1);
     }
-    .form-lock {
-      color: rgba(220,20,60,0.5); font-size: 0.85rem; flex-shrink: 0;
-    }
+    .lock-icon { color: rgba(220,20,60,0.45); flex-shrink: 0; display: flex; }
     #sj-address {
-      flex: 1;
-      background: none; border: none; outline: none;
-      font-family: var(--mono); font-size: 0.88rem;
-      color: var(--text); letter-spacing: 0.02em;
+      flex: 1; background: none; border: none; outline: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      color: var(--text); letter-spacing: 0.01em;
     }
     #sj-address::placeholder { color: var(--mute); }
-    .form-submit {
-      background: var(--red);
-      border: none; border-radius: 9px;
-      width: 40px; height: 40px;
-      color: #fff; font-size: 1rem; cursor: pointer;
+    .go-btn {
+      background: var(--red); border: none; border-radius: 8px;
+      width: 38px; height: 38px; color: #fff; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      flex-shrink: 0; font-size: 1rem;
+      box-shadow: 0 3px 14px rgba(220,20,60,0.38);
       transition: background 0.15s, transform 0.1s;
-      box-shadow: 0 4px 18px rgba(220,20,60,0.4);
     }
-    .form-submit:hover { background: #b8102e; transform: scale(1.06); }
-    .form-submit:active { transform: scale(0.97); }
-    /* Arrow icon via CSS (no external deps) */
-    .form-submit::before {
-      content: '';
-      display: block;
-      width: 14px; height: 10px;
-      border-right: 2px solid #fff;
-      border-bottom: 2px solid #fff;
-      border-top: 2px solid #fff;
-      border-left: none;
-      position: relative;
-      clip-path: polygon(0 30%, 60% 30%, 60% 0, 100% 50%, 60% 100%, 60% 70%, 0 70%);
-      background: #fff;
-    }
+    .go-btn:hover { background: #b8102e; transform: scale(1.06); }
+    .go-btn:active { transform: scale(0.96); }
 
-    /* ── Quick-launch grid ── */
-    .quick-grid {
-      display: flex; gap: 1.1rem; flex-wrap: wrap; justify-content: center;
-    }
-    .ql-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
-      cursor: pointer; background: none; border: none;
-      text-decoration: none;
+    /* ── Quick links ── */
+    .quick { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .ql {
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      cursor: pointer; border: none; background: none; text-decoration: none;
       transition: transform 0.15s;
     }
-    .ql-btn:hover { transform: translateY(-4px); }
-    .ql-icon {
-      width: 54px; height: 54px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
+    .ql:hover { transform: translateY(-4px); }
+    .ql-ico {
+      width: 52px; height: 52px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 13px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
       transition: border-color 0.2s, box-shadow 0.2s;
-      overflow: hidden;
     }
-    .ql-icon img { width: 30px; height: 30px; object-fit: contain; }
-    .ql-btn:hover .ql-icon {
-      border-color: var(--bdr-red);
-      box-shadow: 0 0 20px rgba(220,20,60,0.14);
-    }
-    .ql-label {
-      font-size: 0.7rem; color: var(--mute);
-      font-family: var(--body); font-weight: 500; letter-spacing: 0.03em;
-    }
+    .ql:hover .ql-ico { border-color: var(--bdr-red); box-shadow: 0 0 18px rgba(220,20,60,0.13); }
+    .ql-lbl { font-size: 0.68rem; color: var(--mute); font-weight: 500; letter-spacing: 0.02em; }
 
     /* ── Footer ── */
     .footer {
       position: fixed; bottom: 0; left: 0; right: 0;
-      padding: 0.6rem 1.5rem;
+      padding: 0.5rem 1.2rem;
       display: flex; align-items: center; justify-content: space-between;
-      font-family: var(--mono); font-size: 0.65rem; color: var(--mute);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--mute);
       border-top: 1px solid var(--border);
-      background: rgba(13,13,20,0.6);
-      backdrop-filter: blur(10px);
+      background: rgba(13,13,20,0.7); backdrop-filter: blur(10px);
     }
-    .footer-badges { display: flex; gap: 0.75rem; }
-    .footer-badge {
-      display: flex; align-items: center; gap: 0.3rem;
-      color: var(--mute);
-    }
-    .footer-dot {
+    .footer-left { display: flex; align-items: center; gap: 0.45rem; }
+    .live-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: #22c55e; box-shadow: 0 0 6px #22c55e;
-      animation: dot-blink 2s ease-in-out infinite;
+      background: #22c55e; box-shadow: 0 0 5px #22c55e;
+      animation: blink 2s infinite;
     }
-    @keyframes dot-blink {
-      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+    .footer-right { display: flex; gap: 0.6rem; }
   </style>
 </head>
 <body>
 
 <div class="page">
-
-  <!-- Branding -->
   <div class="brand">
     <div class="brand-globe">
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
         <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855A8 8 0 0 0 5.145 4H7.5zM4.09 4a9.3 9.3 0 0 1 .64-1.539 7 7 0 0 1 .597-.933A7.03 7.03 0 0 0 2.255 4zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a7 7 0 0 0-.656 2.5zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5zM8.5 5v2.5h2.99a12.5 12.5 0 0 0-.337-2.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5zM5.145 12q.208.58.468 1.068c.552 1.035 1.218 1.65 1.887 1.855V12zm.182 2.472a7 7 0 0 1-.597-.933A9.3 9.3 0 0 1 4.09 12H2.255a7 7 0 0 0 3.072 2.472M3.82 11a13.7 13.7 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5zm6.853 3.472A7 7 0 0 0 13.745 12H11.91a9.3 9.3 0 0 1-.64 1.539 7 7 0 0 1-.597.933M8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855q.26-.487.468-1.068zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.7 13.7 0 0 1-.312 2.5m2.802-3.5a7 7 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7 7 0 0 0-3.072-2.472c.218.284.418.598.597.933M10.855 4a8 8 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4z"/>
       </svg>
     </div>
@@ -217,132 +130,90 @@
     <div class="brand-sub">Secure · Private · Unrestricted</div>
   </div>
 
-  <!-- Scramjet form — IDs must stay as-is for the proxy engine -->
   <form id="sj-form" autocomplete="off" onsubmit="return false;">
-    <span class="form-lock">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+    <span class="lock-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/>
       </svg>
     </span>
-    <input
-      id="sj-address"
-      type="text"
-      placeholder="enter url or search the web freely…"
-      spellcheck="false"
-      autocomplete="off"
-      autofocus
-    >
-    <button class="form-submit" type="submit" title="Go" aria-label="Go"></button>
+    <input id="sj-address" type="text" placeholder="enter url or search…" spellcheck="false" autocomplete="off" autofocus>
+    <button class="go-btn" type="submit" aria-label="Go">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+      </svg>
+    </button>
   </form>
 
-  <!-- Quick-launch -->
-  <div class="quick-grid">
-    <a class="ql-btn" id="ql-youtube" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt="YouTube"></div>
-      <span class="ql-label">YouTube</span>
+  <!-- Quick-launch: emoji icons, no external image fetches -->
+  <div class="quick">
+    <a class="ql" data-url="https://youtube.com">
+      <div class="ql-ico">▶️</div><span class="ql-lbl">YouTube</span>
     </a>
-    <a class="ql-btn" id="ql-discord" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=discord.com&sz=64" alt="Discord"></div>
-      <span class="ql-label">Discord</span>
+    <a class="ql" data-url="https://discord.com">
+      <div class="ql-ico">💬</div><span class="ql-lbl">Discord</span>
     </a>
-    <a class="ql-btn" id="ql-google" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=google.com&sz=64" alt="Google"></div>
-      <span class="ql-label">Google</span>
+    <a class="ql" data-url="https://google.com">
+      <div class="ql-ico">🔍</div><span class="ql-lbl">Google</span>
     </a>
-    <a class="ql-btn" id="ql-reddit" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=reddit.com&sz=64" alt="Reddit"></div>
-      <span class="ql-label">Reddit</span>
+    <a class="ql" data-url="https://reddit.com">
+      <div class="ql-ico">🤖</div><span class="ql-lbl">Reddit</span>
     </a>
-    <a class="ql-btn" id="ql-spotify" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=spotify.com&sz=64" alt="Spotify"></div>
-      <span class="ql-label">Spotify</span>
+    <a class="ql" data-url="https://spotify.com">
+      <div class="ql-ico">🎵</div><span class="ql-lbl">Spotify</span>
     </a>
-    <a class="ql-btn" id="ql-x" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=x.com&sz=64" alt="X"></div>
-      <span class="ql-label">X</span>
+    <a class="ql" data-url="https://twitter.com">
+      <div class="ql-ico">𝕏</div><span class="ql-lbl">X</span>
     </a>
-    <a class="ql-btn" id="ql-github" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="GitHub"></div>
-      <span class="ql-label">GitHub</span>
+    <a class="ql" data-url="https://github.com">
+      <div class="ql-ico">⌥</div><span class="ql-lbl">GitHub</span>
     </a>
-    <a class="ql-btn" id="ql-wikipedia" href="#">
-      <div class="ql-icon"><img src="https://www.google.com/s2/favicons?domain=wikipedia.org&sz=64" alt="Wikipedia"></div>
-      <span class="ql-label">Wikipedia</span>
+    <a class="ql" data-url="https://wikipedia.org">
+      <div class="ql-ico">📖</div><span class="ql-lbl">Wikipedia</span>
     </a>
   </div>
-
 </div>
 
-<!-- Status footer -->
 <div class="footer">
-  <div style="display:flex;align-items:center;gap:0.5rem;">
-    <div class="footer-dot"></div>
-    <span>Scramjet Active</span>
-  </div>
-  <div class="footer-badges">
-    <span class="footer-badge">🔒 Proxied</span>
-    <span class="footer-badge">🛡 Encrypted</span>
-  </div>
+  <div class="footer-left"><div class="live-dot"></div><span>Scramjet Active</span></div>
+  <div class="footer-right"><span>🔒 Proxied</span><span>🛡 Encrypted</span></div>
 </div>
 
 <!--
-  ── Scramjet bootstrap ──────────────────────────────────────────────────────
-  The scripts below are what actually run the proxy engine. Keep them intact.
-  The import paths match what Scramjet-App builds to.
+  Scramjet bootstrap — paths match the built output from Scramjet-App.
+  scramjet.all.js is the unified bundle (replaces the old codecs + controller split).
+  Do NOT change these paths; they're served by the Node.js server at build time.
 -->
-<script src="/scram/scramjet.codecs.js"></script>
+<script src="/scram/scramjet.all.js"></script>
 <script type="module">
-  import { ScramjetController } from "/scram/scramjet.js";
+  // ScramjetController is exposed as a global by scramjet.all.js
+  const { ScramjetController } = $scramjet;
 
   const controller = new ScramjetController({
-    prefix: "/scram/proxy/",
-    config: "/scram/scramjet.config.js",
-    codec:  ScramjetCodecs.xor,
+    prefix:  "/scram/proxy/",
+    config:  "/scram/scramjet.config.js",
     wispUrl: (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/",
   });
 
   await controller.init("/scram/scramjet.worker.js");
 
-  // ── Handle form submit ──────────────────────────────────
-  function navigateToUrl(raw) {
-    raw = raw.trim();
+  function go(raw) {
+    raw = (raw || "").trim();
     if (!raw) return;
     let url;
-    if (/^https?:\/\//i.test(raw)) {
-      url = raw;
-    } else if (/^[\w-]+(\.[\w-]+)+/.test(raw)) {
-      url = 'https://' + raw;
-    } else {
-      url = 'https://www.google.com/search?q=' + encodeURIComponent(raw);
-    }
+    if (/^https?:\/\//i.test(raw))           url = raw;
+    else if (/^[\w-]+(\.[\w-]+)+/.test(raw)) url = "https://" + raw;
+    else url = "https://www.google.com/search?q=" + encodeURIComponent(raw);
     controller.go(new URL(url));
   }
 
-  const form    = document.getElementById('sj-form');
-  const input   = document.getElementById('sj-address');
-
-  form.addEventListener('submit', (e) => {
+  document.getElementById("sj-form").addEventListener("submit", e => {
     e.preventDefault();
-    navigateToUrl(input.value);
+    go(document.getElementById("sj-address").value);
   });
 
-  // ── Quick-launch links ──────────────────────────────────
-  const quickLinks = {
-    'ql-youtube':   'https://youtube.com',
-    'ql-discord':   'https://discord.com',
-    'ql-google':    'https://google.com',
-    'ql-reddit':    'https://reddit.com',
-    'ql-spotify':   'https://spotify.com',
-    'ql-x':         'https://twitter.com',
-    'ql-github':    'https://github.com',
-    'ql-wikipedia': 'https://wikipedia.org',
-  };
-  for (const [id, url] of Object.entries(quickLinks)) {
-    document.getElementById(id)?.addEventListener('click', (e) => {
-      e.preventDefault();
-      controller.go(new URL(url));
-    });
-  }
+  document.querySelectorAll(".ql[data-url]").forEach(el => {
+    el.addEventListener("click", e => { e.preventDefault(); go(el.dataset.url); });
+  });
 </script>
 
 </body>
