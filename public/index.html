@@ -15,85 +15,30 @@
     <script src="index.js" defer></script>
   </head>
   <body>
+    <form id="sj-form" style="display:none">
+      <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+      <input id="sj-address" type="text" />
+    </form>
+    <p id="sj-error"></p>
+    <pre id="sj-error-code"></pre>
 
-    <!-- Auto-navigate from hash if proxy.html passed a URL -->
     <script>
+      // Read the target URL from the hash (set by proxy.html)
       (function () {
         var hash = location.hash;
-        if (hash && hash.length > 1) {
-          var target = decodeURIComponent(hash.slice(1));
-          // Wait for search.js / index.js to register the SW and set up the form,
-          // then fire the search programmatically.
-          window.__autoNavigateTarget = target;
-        }
-      })();
-    </script>
+        if (!hash || hash.length <= 1) return;
+        var target = decodeURIComponent(hash.slice(1));
 
-    <!-- Invisible pass-through UI: shown only when there's no auto-target -->
-    <div id="sj-ui" style="display:none">
-      <div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-        <img class="logo" src="sj.png" alt="Scramjet" />
-        <h1>Scramjet | MW</h1>
-      </div>
-      <div class="flex-center desc left-margin">
-        <p>
-          Scramjet is an experimental interception based web proxy designed to
-          evade internet censorship, bypass arbitrary web browser restrictions and
-          innovate web proxy technologies.
-        </p>
-      </div>
-      <form id="sj-form" class="flex-center">
-        <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-        <input id="sj-address" type="text" placeholder="Search the web freely" />
-      </form>
-      <div class="desc left-margin">
-        <p id="sj-error"></p>
-        <pre id="sj-error-code"></pre>
-      </div>
-      <footer>
-        <div>
-          <a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop">Mercury Workshop</a>
-          <a title="The example demo app for Scramjet" href="https://github.com/MercuryWorkshop/Scramjet-Demo">GitHub</a>
-          <a title="License information" href="credits.html">Credits</a>
-        </div>
-        <div><span>Scramjet &copy; MW 2025</span></div>
-      </footer>
-    </div>
-
-    <!-- Auto-nav trigger: runs after deferred scripts (search.js, index.js) have loaded -->
-    <script>
-      window.addEventListener('load', function () {
-        var target = window.__autoNavigateTarget;
-
-        if (!target) {
-          // No hash — show the normal UI
-          var ui = document.getElementById('sj-ui');
-          if (ui) ui.style.display = '';
-          return;
-        }
-
-        // Prefer the Scramjet search helper if search.js exposes it
-        if (typeof search === 'function') {
-          try { search(target); return; } catch (e) {}
-        }
-
-        // Fallback: fill the form field and dispatch a submit event
-        var addr = document.getElementById('sj-address');
-        var form = document.getElementById('sj-form');
-        if (addr && form) {
+        // Wait for all deferred scripts (register-sw.js, search.js, index.js) to load,
+        // then trigger the form submit exactly as a user would — index.js handles the rest.
+        window.addEventListener('load', function () {
+          var addr = document.getElementById('sj-address');
+          var form = document.getElementById('sj-form');
+          if (!addr || !form) return;
           addr.value = target;
           form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-          return;
-        }
-
-        // Last resort: navigate directly if Scramjet's SW is already active
-        if (typeof __scramjet$ !== 'undefined') {
-          try {
-            location.href = __scramjet$.rewrite(target);
-          } catch (e) {}
-        }
-      });
+        });
+      })();
     </script>
-
   </body>
 </html>
